@@ -1,0 +1,15 @@
+create table macbook_class(
+midx int unsigned auto_increment,
+class_part varchar(100) not null,
+class_cate varchar(30) not null,
+class_name varchar(200) not null,
+class_day int not null default '1',
+class_price int not null,
+class_sales int not null,
+class_info text null,
+class_teacher varchar(100) null,
+class_object text null,
+class_use enum('Y','N') not null default 'N',
+today timestamp not null default current_timestamp,
+orimary key(midx)
+);

@@ -7,12 +7,15 @@ import java.sql.ResultSet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import org.mybatis.logging.*;
 
 @Controller
 public class mainpage2 {
@@ -80,12 +83,6 @@ public class mainpage2 {
 	 * method 속성 : 통신방법(Front-end 데이터 이관방법)
 	 * 
 	 */
-	@RequestMapping(value="/event_infook.do",method=RequestMethod.POST) //보안상 method 지정해야 함
-	public String eventok(event_DTO dto) {
-		System.out.println(dto.getEname());
-		return "eventok";
-	}
-	
 	/*
 	@RequestMapping("/event_infookdo")  //GET도 열리므로 보안상 매우 취약
 	public String eventok() {
@@ -93,4 +90,30 @@ public class mainpage2 {
 		return "eventok";
 	}
 	*/
+	@RequestMapping(value="/event_infook.do",method=RequestMethod.POST) //보안상 method 지정해야 함
+	public String eventok(event_DTO dto) {
+		try {
+			this.con = this.dbinfo.getConnection();
+			String sql = "insert into event values ('0',?,?,?,?,?,?,now())";
+			this.ps = this.con.prepareStatement(sql);
+			this.ps.setString(1, dto.getEname());
+			this.ps.setString(2, dto.getEtel());
+			this.ps.setString(3, dto.getEmail());
+			this.ps.setString(4, dto.getInfo1());
+			this.ps.setString(5, dto.getInfo2());
+			this.ps.setString(6, dto.getEmemo());
+			int result = this.ps.executeUpdate();
+			System.out.println(result);
+			
+		}catch (Exception e) {
+			System.out.println(e);
+		}finally {
+			try {
+				this.ps.close();
+			}catch (Exception e) {
+				
+			}
+		}
+		return "eventok";
+	}
 }
