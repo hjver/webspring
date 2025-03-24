@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class macbook {
@@ -27,7 +28,38 @@ public class macbook {
 	 */
 	@Resource(name="macbook_DAO")
 	private macbook_DAO dao;
-
+	
+	@PostMapping("/macbook_modifyok.do")
+	public String macbook_modifyok(macbook_DTO dto, Model m) {
+		//insert, update, delete는 무조건 결과를 int로 받음
+		int result = this.dao.macbook_update(dto); //DAO로 값을 전송
+		//System.out.println(result);
+		String msg = "";
+		if(result > 0) {
+			msg = "alert('정상적으로 데이터가 수정 되었습니다.');"
+					+ "location.href='./macbook_list.do';";
+		}
+		m.addAttribute("msg", msg);
+		return "load";
+	}
+	
+	//과정 수정 페이지
+	@PostMapping("/macbook_modity.do")
+	public String macbook_modity(@RequestParam("midx") String midx, Model m) {
+		//System.out.println(midx);
+		macbook_DTO onedata = this.dao.macbook_one(midx);
+		//System.out.println(onedata.getClass_name());
+		m.addAttribute("onedata", onedata); //JSTL로 값을 이관함
+		return null;
+	}
+	
+	//과정 삭제 페이지
+	@PostMapping("/macbook_delete.do")
+	public String macbook_delete(String midx) {
+		System.out.println(midx);
+		return null;
+	}
+	
 	//과정 리스트 출력
 	@GetMapping("/macbook_list.do")
 	public String macbook_list(Model m) {
