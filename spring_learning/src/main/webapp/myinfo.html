@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>개인정보 확인 (API를 이용하여 데이터 출력)</title>
+<style>
+.flx{
+display:flex;
+}
+</style>
+</head>
+<body>
+
+<div class="flx">아이디 : <div id="mid"></div></div>
+<div class="flx">이름 : <div id="maame"></div></div>
+<div class="flx">이메일 : <div id="memail"></div></div>
+<div class="flx">지역 : <div id="marea"></div></div>
+<div class="flx">연락처 : <div id="mphone"></div></div>
+
+</body>
+<script>
+var http,data;
+http = new XMLHttpRequest();
+http.onreadystatechange = function(){
+	if(http.readyState==4 && http.status==200){
+		//JSON.parse : API에서 받은 문자열을 배열화 시키는 함수
+		data = JSON.parse(this.response);
+		view();
+	}
+}
+http.open("GET","./api_data3.do",false);
+http.send();
+
+function view(){
+	document.getElementById("mid").innerText = data["myinfo"][0]["id"];
+	document.getElementById("maame").innerText = data["myinfo"][0]["name"];
+	document.getElementById("memail").innerText = data["myinfo"][0]["email"];
+	document.getElementById("marea").innerText = data["myinfo"][0]["area"];
+	document.getElementById("mphone").innerText = data["myinfo"][0]["phone"];
+}
+</script>
+</html>

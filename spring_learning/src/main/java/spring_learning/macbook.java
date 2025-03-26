@@ -1,17 +1,11 @@
 package spring_learning;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.io.PrintWriter;
 import java.util.List;
 
 import javax.annotation.Resource;
-import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.mybatis.spring.SqlSessionFactoryBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,10 +47,25 @@ public class macbook {
 		return null;
 	}
 	
+	PrintWriter pw = null;
+	
 	//과정 삭제 페이지
+	/*Model과 HttpServletResponse은 함께 사용하지 못합니다. 
+	 * 두개의 interface 역할이 동일하므로 하나만 사용합니다.
+	 */
 	@PostMapping("/macbook_delete.do")
-	public String macbook_delete(String midx) {
-		System.out.println(midx);
+	public String macbook_delete(String midx, 
+			HttpServletResponse res) throws Exception {
+		res.setContentType("text/html;charset=utf-8");
+		this.pw = res.getWriter();
+		int result = this.dao.macbook_delete(Integer.parseInt(midx));
+		if(result > 0) {
+			this.pw.print("<script>"
+					+ "alert('올바르게 해당 과정을 삭제 하였습니다.');"
+					+ "location.href='./macbook_list.do';"
+					+ "</script>");
+		}
+		this.pw.close();
 		return null;
 	}
 	
@@ -74,7 +83,7 @@ public class macbook {
 	@PostMapping("/macbook_ok.do")
 	public String macbook_ok(macbook_DTO dto, Model m) throws Exception {
 		try {
-			int result = this.dao.macbook_in(dto);
+			int result = this.dao.macbook_insert(dto);
 			String msg = "";
 			if(result > 0) {
 				msg = "alert('과정 개설이 올바르게 생성 되었습니다.');"
