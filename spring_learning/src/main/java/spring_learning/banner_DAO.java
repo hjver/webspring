@@ -1,6 +1,8 @@
 package spring_learning;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -13,9 +15,30 @@ public class banner_DAO {
 	@Resource(name="template")
 	public SqlSessionTemplate st;
 	
-	//배너 전체 리스트
-	public List<banner_DTO> banner_all(){
-		List<banner_DTO> all = this.st.selectList("macbook_user.banner_all");
+	Integer page_ea = 5; //한페이지당 5개씩 출력
+	
+	public int banner_total() {
+		int total = this.st.selectOne("macbook_user.banner_total");
+		return total;
+	}
+	
+	//배너명으로 검색된 데이터를 가져오는 메소드 (DAO)
+	public List<banner_DTO> banner_search(String search){
+		List<banner_DTO> all = this.st.selectList("macbook_user.banner_search", search);
+		return all;
+	}
+	
+	//배너 전체 리스트 + Paging 추가
+	//Integer pgno (매개변수) : Controller에서 사용자가 클릭한 페이지 번호를 받는 역할
+	public List<banner_DTO> banner_all(Integer pgno){
+		
+		int spage = (pgno-1)*page_ea;
+		
+		//limit을 사용하기 위해 Map 형태로 구성하여 Mapper로 전달
+		Map<String, Integer> data = new HashMap<>();
+		data.put("spage", spage); //limit 첫번째 번호
+		data.put("epage", this.page_ea); //limit 두번째 번호
+		List<banner_DTO> all = this.st.selectList("macbook_user.banner_all", data);
 		return all;
 	}
 	
