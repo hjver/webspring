@@ -94,4 +94,31 @@ public class banner_controller {
 		m.addAttribute("all",all);
 		return null;
 	}
+	
+	@PostMapping("/banner/bannerdel")
+	public String bannerdel(
+			@RequestParam(defaultValue="", required=false) String ckdel,
+			Model m) {
+		this.callback = 0; //초기화
+		String msg = "";
+		if(ckdel.equals("")) {
+			msg = "alert('올바른 접근이 아닙니다.); location.href='./bannerlist';";
+		}else {
+			String no[] = ckdel.split(",");
+			int w = 0;
+			while(w < no.length) { //Front-end에 체크된 값만큼 반복
+				this.callback += this.dao.banner_del(no[w]);
+				w++;
+			}
+			if(no.length == this.callback) {
+				msg = "alert('정상적으로 삭제되었습니다.'); location.href='./bannerlist';";
+			}
+			else {
+				msg = "alert('비정상적인 데이터가 확인되었습니다.'); location.href='./bannerlist';";
+			}
+		}
+		m.addAttribute("msg",msg);
+		return "load";
+	}
+	
 }

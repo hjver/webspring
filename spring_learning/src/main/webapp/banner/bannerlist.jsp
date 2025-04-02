@@ -19,6 +19,34 @@ function spage(){
 		return;
 	}
 }
+//전체선택 관련 핸들링 함수
+//getElements : name, class  getElement : id
+function check_all(ck){ //ck : true, false
+	var ea = document.getElementsByName("ckbox");
+	
+	//조건문 없이 이벤트를 발생시킴
+	w = 0;
+	while(w < ea.length){
+		ea[w].checked = ck;
+		w++;
+	}
+	
+	/*
+	if(ck == true){ //전체선택 했을 경우
+		w = 0;
+		while(w < ea.length){
+			ea[w].checked = true;
+			w++;
+		}
+	}else{ //전체선택을 해제 할 경우
+		w = 0;
+		while(w < ea.length){
+			ea[w].checked = false;
+			w++;
+		}	
+	}
+	*/
+}
 </script>
 <form id="sform" method="get" action="./bannerlist" onsubmit="return spage()">
 <p>
@@ -31,7 +59,7 @@ function spage(){
 <table border="1" cellpadding="0" cellspacing="0">
 <thead>
 <tr>
-	<th><input type="checkbox"></th>
+	<th><input type="checkbox" id="allck" onclick="check_all(this.checked)"></th>
 	<th width="80">번호</th>
 	<th width="300">배너명</th>
 	<th width="100">이미지</th>
@@ -49,9 +77,11 @@ function spage(){
 </cr:if>
 <tbody>
 <cr:set var="ino" value="${total-userpage}"/> <!-- 게시물 일련번호 셋팅 -->
+<!-- jsp, jstl 반복문 안에는 절대 id로 같은 이름을 사용하시면 안됩니다. -->
 <cr:forEach var="bn" items="${all}" varStatus="idx">
 <tr>
-	<td><input type="checkbox"></td>
+	<!-- bidx : DB에서 사용된 auto_increment -->
+	<td><input type="checkbox" name="ckbox" value="${bn.bidx}"></td>
 	<td align="center">${ino-idx.index}</td>
 	<td>${bn.bname}</td>
 	<cr:if test="${bn.file_url == null}">
@@ -66,11 +96,13 @@ function spage(){
 </cr:forEach>
 </tbody>
 </table>
-<form id="dtorm">
-<input type="hidden">
+<!-- form 전송으로 선택된 값을 삭제하는 프로세서-->
+<form id="dform" method="post" action="./bannerdel">
+<input type="hidden" name="ckdel" value="">
 </form>
+<!-- form 전송으로 선택된 값을 삭제하는 프로세서-->
 <br><br>
-<input type="button" value="선택삭제">
+<input type="button" value="선택삭제" onclick="check_del()">
 <br><br>
 <!-- pageing -->
 <table border="1" cellpadding="0" cellspacing="0">
@@ -87,6 +119,26 @@ function spage(){
 </tbody>
 </table>
 <script>
+//선택삭제 버튼 클릭시 리스트에서 체크된 값을 확인 후 배열화 하여 hidden으로 값을 적용하여
+//Back-end로 문자열로 전달
+function check_del(){
+	var ar = new Array();  //script 배열
+	
+	var ob = document.getElementsByName("ckbox");
+	var w = 0;
+	while(w < ob.length){
+		if(ob[w].checked == true){
+			ar.push(ob[w].value);
+		}
+		w++;
+	}
+	dform.ckdel.value = ar;
+	
+	if(confirm("해당 데이터를 삭제시 복구 되지 않습니다.")){
+		dform.submit();
+	}
+}
+
 function pg(no){
 	location.href='./bannerlist?pageno='+no;
 }

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>오늘일자 체크 및 현재 시간에 대한 체크사항</title>
+</head>
+<body>
+<form id="frm">
+날짜 선택 : <input type="date" name="rdate"><br> <!-- 2025-04-02 -->
+예매 시간 : <select name="rtime">
+<option value="">시간선택</option>
+<option value="09">09:00</option>
+<option value="09">11:00</option>
+<option value="09">13:00</option>
+<option value="09">15:00</option>
+</select>
+<input type="button" value="예매" onclick="datecheck()">
+</form>
+</body>
+<script>
+function datecheck(){
+	var date = new Date(); //오늘
+	var edate = frm.rdate.value; //사용자 선택
+	
+	var sdate = date.toISOString().split('T')[0];
+	console.log(sdate);
+	
+	if(edate < sdate){
+		alert("해당 날짜 선택을 잘못 하셨습니다.")
+	}
+	else{
+		var ss = String(date.getMinutes()).padStart(2, "0");
+		var t = date.getHours() + "" + ss;  //현재시간
+		console.log(t);
+		var ut = frm.rtime.value + "" + 00 ; //사용자가 선택한 시간
+		if(t > ut){
+			alert("현재 선택한 시간은 이미 예매가 끝났습니다.")
+		}
+		else{
+			alert("예매 하시겠습니까?")
+		}
+	}
+
+}
+</script>
+</html>
